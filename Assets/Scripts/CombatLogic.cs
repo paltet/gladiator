@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
@@ -23,6 +24,9 @@ public class CombatLogic : MonoBehaviour
     [Range(0F, 100F)]
     public int desvX100;
 
+    public GameObject endingPanel;
+    public TMP_Text endingText;
+
     private void Awake()
     {
         if (instance == null)
@@ -38,12 +42,17 @@ public class CombatLogic : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        endingPanel.SetActive(false);
         Transform circle = transform.Find("Circle");
         if (circle == null) Debug.Log("Arena Circle not found.");
         else circle.localScale = new Vector2(width, height);
 
         gladiators = new List<Gladiator>();
-        if (GameManager.Instance.selectedGladiators != null) gladiators.AddRange(GameManager.Instance.selectedGladiators);
+        foreach(GL_Data gL_Data in GameManager.Instance.nextBattle.gladiators)
+        {
+            Gladiator gladiator = new Gladiator(gL_Data);
+            gladiators.Add(gladiator);
+        }
 
         for (int i = 0; i < gladiators.Count; i++)
         {
@@ -209,9 +218,16 @@ public class CombatLogic : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2)) SpawnRandomGladiators(2);
-        else if (Input.GetKeyDown(KeyCode.Alpha3)) SpawnRandomGladiators(3);
-        else if (Input.GetKeyDown(KeyCode.Alpha4)) SpawnRandomGladiators(4);
+        int activeGladiators = 0;
+        foreach (Transform gladiatorTR in gladiatorsParent)
+        {
+            GL_State state = gladiatorTR.gameObject.GetComponent<GLController>().state;
+            if (state == GL_State.Alive)
+            {
+                activeGladiators++;
+            }
+        }
+        if (activeGladiators <= 1) StartCoroutine(EndBattle());
     }
 
     private void SpawnRandomGladiators(int n)
@@ -230,6 +246,46 @@ public class CombatLogic : MonoBehaviour
             newGl.transform.position = getPosition(i, n);
             newGl.GetComponent<GLController>().Set(gladiator);
         }
+    }
+
+    IEnumerator EndBattle()
+    {
+        ApplyResults();
+        yield return new WaitForSeconds(2);
+        SetEndingPanel();
+    }
+
+    private void ApplyResults()
+    {
+        List < GLController > gl = new List<GLController>();
+        foreach (Transform child in gladiatorsParent)
+        {
+            gl.Add(child.gameObject.GetComponent<GLController>());
+        }
+        GameManager.Instance.nextBattle.ApplyResults(gl);
+    }
+
+    private void SetEndingPanel()
+    {
+        endingPanel.SetActive(true);
+
+        string text = "Battle ended. \n \n Results: ";
+
+        foreach (Transform child in gladiatorsParent)
+        {
+            text += "\n";
+
+            GLController controller = child.GetComponent<GLController>();
+            text += controller.gladiator.getData().gl_name + " is " + controller.state.ToString();
+            
+        }
+
+        endingText.text = text;
+    }
+
+    public void Continue()
+    {
+        GameManager.Instance.LoadScene("Scene_PreCombat");
     }
 }
  

@@ -9,9 +9,9 @@ public class GLSelectorButton : MonoBehaviour
     public  Gladiator gladiator;
     public TMP_Text basicInfo_text, st_text, sp_text, ag_text, br_text, sk_text, lu_text;
 
-    void Start()
+    public void Set(Gladiator gladiator)
     {
-        gladiator = new Gladiator();
+        this.gladiator = gladiator;
 
         GL_Data data = gladiator.getData();
         basicInfo_text.text = data.gl_name + ", " + data.gl_origin;
@@ -26,16 +26,12 @@ public class GLSelectorButton : MonoBehaviour
 
     public void Select()
     {
-        if (CombatSelectorLogic.Instance != null)
-        {
-            if (CombatSelectorLogic.Instance.Select(this))
-                if (GetComponent<Button>() != null)
-                    GetComponent<Button>().interactable = false;
-        }
-    }
-
-    public void Delete()
-    {
-        Destroy(this.gameObject);
+        if (GLDetailLogic.Instance != null)
+            GLDetailLogic.Instance.Select(this);
+        if (CombatSelectorLogic.Instance != null) 
+            CombatSelectorLogic.Instance.Select(this);
+        if (MarketSceneLogic.Instance != null)
+            MarketSceneLogic.Instance.Select(this);
     }
 }
+ 
