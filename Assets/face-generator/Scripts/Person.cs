@@ -18,8 +18,8 @@ public class Person : MonoBehaviour
 
     void Start()
     {
-        _skinColorManager = GetComponent<SkinColorManager>();
-        _hairColorManager = GetComponent<HairColorManager>();
+        if (_skinColorManager) _skinColorManager = GetComponent<SkinColorManager>();
+        if (_hairColorManager) _hairColorManager = GetComponent<HairColorManager>();
         RandomizeFace();
     }
 

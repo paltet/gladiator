@@ -15,8 +15,13 @@ public class MarketSceneLogic : MonoBehaviour
 
     public GameObject profilePanel;
     public Button buyButton;
+    public GameObject limitText;
     public TMP_Text moneyText;
+    
     private ProfilePanel panel;
+    private int currentGl;
+    private int limitGl;
+
 
     private void Awake()
     {
@@ -41,6 +46,9 @@ public class MarketSceneLogic : MonoBehaviour
             GameObject button = Instantiate(GLSelectorButton_Prefab, selectorPanel_transform);
             button.GetComponent<GLSelectorButton>().Set(gladiator);
         }
+
+        currentGl = DataManager.Instance.getNGladiators();
+        limitGl = DataManager.Instance.names_GlAllowed();
     }
 
     public bool Select(GLSelectorButton selector)
@@ -56,12 +64,46 @@ public class MarketSceneLogic : MonoBehaviour
     private void Update()
     {
         int money = DataManager.Instance.getMoney();
-        if (panel && panel.gladiator != null && panel.gladiator.MarketValue() > money) buyButton.interactable = false;
+
+        Debug.Log(currentGl + " " + limitGl);
+
+        moneyText.text = money.ToString();
+
+        if (currentGl < limitGl)
+        {
+            if (panel && panel.gladiator != null && panel.gladiator.MarketValue() > money && currentGl >= limitGl) buyButton.interactable = false;
+            else buyButton.interactable = true;
+
+
+        }
+        else
+        {
+            buyButton.interactable = false;
+            limitText.SetActive(true);
+            buyButton.GetComponentInChildren<TMP_Text>().text = "MAX";
+        }
+
+        /*  
+        if (panel && panel.gladiator != null && panel.gladiator.MarketValue() > money && currentGl >= limitGl) buyButton.interactable = false;
         else buyButton.interactable = true;
 
         moneyText.text = money.ToString();
 
+
         if (Input.GetKeyDown(KeyCode.M)) DataManager.Instance.AddMoney(100);
+
+        if (currentGl >= limitGl)
+        {
+            limitText.SetActive(true);
+            buyButton.GetComponentInChildren<TMP_Text>().text = "MAX";
+        }
+        else
+        {
+            limitText.SetActive(false);
+            buyButton.GetComponentInChildren<TMP_Text>().text = "Buy";
+
+        }
+        */
     }
 
     public void Buy()

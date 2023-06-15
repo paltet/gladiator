@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92209d7382d3acd4b986b2d874b9d648, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  names: {fileID: 4900000, guid: 2dd5897ce23249c4e861c32955c061b4, type: 3}
 --- !u!114 &803303644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57,3 +58,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5692432e59f894db169a70dc5da9bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextFestival:
+    battles: []
+    year: 0
+    month: 0
+    totalMoney: 0
+    totalXp: 0
+  nextBattle:
+    id: 
+    gladiators: []
+    results: 
+    xpEarned: 0
+    moneyEarned: 0

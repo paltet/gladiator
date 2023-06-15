@@ -20,6 +20,11 @@ public class GameSave
     public List<GLFestival> festivals;
     public GLFestival nextFestival;
 
+    public int perk_standsLevel;
+    public int perk_chambersLevel;
+    public int perk_logesLevel;
+
+
     public GameSave (string name, string cityname)
     {
         this.name = name;
@@ -28,6 +33,10 @@ public class GameSave
         this.month = 1;
         this.repPoints = 0;
         this.money = 0;
+
+        this.perk_chambersLevel = 1;
+        this.perk_logesLevel = 1;
+        this.perk_standsLevel = 1;
 
         gladiators = new List<GL_Data> ();
         marketGladiators = new List<GL_Data>();

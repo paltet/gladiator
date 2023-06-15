@@ -88,12 +88,12 @@ public class GLBattle
 
     private int GetMoney()
     {
-        return 100;
+        return (int)(100 * DataManager.Instance.names_MoneyMult());
     }
 
     private int GetXP()
     {
-        return 100;
+        return (int)(50 * DataManager.Instance.names_RepMult());
     }
 }
 

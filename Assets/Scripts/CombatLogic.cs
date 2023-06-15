@@ -27,6 +27,7 @@ public class CombatLogic : MonoBehaviour
     public GameObject endingPanel;
     public TMP_Text endingText;
 
+    private bool ended = true;
     private void Awake()
     {
         if (instance == null)
@@ -60,6 +61,7 @@ public class CombatLogic : MonoBehaviour
             newGl.transform.position = getPosition(i, gladiators.Count);
             newGl.GetComponent<GLController>().Set(gladiators[i]);
         }
+        ended = false;
     }
 
     public GameObject GetObjective(Gladiator gladiator)
@@ -227,7 +229,11 @@ public class CombatLogic : MonoBehaviour
                 activeGladiators++;
             }
         }
-        if (activeGladiators <= 1) StartCoroutine(EndBattle());
+        if (activeGladiators <= 1 && !ended)
+        {
+            StartCoroutine(EndBattle());
+            ended = true;
+        }
     }
 
     private void SpawnRandomGladiators(int n)
@@ -250,6 +256,7 @@ public class CombatLogic : MonoBehaviour
 
     IEnumerator EndBattle()
     {
+        Debug.Log("ended");
         ApplyResults();
         yield return new WaitForSeconds(2);
         SetEndingPanel();

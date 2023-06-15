@@ -6,14 +6,29 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Scene_CombatSelector.unity
-    guid: b6aa36332d5b1f94caa43f261afe4935
-  - enabled: 1
-    path: Assets/Scenes/Scene_Combat.unity
-    guid: e558a86ad5e88004d930ca142e9d15cf
+    path: Assets/Scenes/Scene_Logo.unity
+    guid: 5932abec4cce6ad419e27f1679762264
   - enabled: 1
     path: Assets/Scenes/Scene_Main.unity
     guid: 902fa86665fd81642ac62abdce2dce57
+  - enabled: 1
+    path: Assets/Scenes/Scene_CombatSelector.unity
+    guid: b6aa36332d5b1f94caa43f261afe4935
+  - enabled: 1
+    path: Assets/Scenes/Scene_Arena.unity
+    guid: 747f7e058af23a84d950bc98ebddf713
+  - enabled: 1
+    path: Assets/Scenes/Scene_ArenaStands.unity
+    guid: 92ae7bd22d05ae9449f20b9efcddf147
+  - enabled: 1
+    path: Assets/Scenes/Scene_ArenaChambers.unity
+    guid: e59cfaecdde0b47409323fc220f7674d
+  - enabled: 1
+    path: Assets/Scenes/Scene_ArenaLoges.unity
+    guid: 5e60e8578f5628e439c0689519595e6b
+  - enabled: 1
+    path: Assets/Scenes/Scene_Combat.unity
+    guid: e558a86ad5e88004d930ca142e9d15cf
   - enabled: 1
     path: Assets/Scenes/Scene_NewPlayer.unity
     guid: 9e7b203ea74ce894d9f6a3fccdb417f1

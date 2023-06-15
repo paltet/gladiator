@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using Unity.VisualScripting;
+using JetBrains.Annotations;
 
 [System.Serializable]
 public class NamesData
@@ -13,6 +15,9 @@ public class NamesData
     public List<string> names;
     public List<string> repTitles;
     public List<int> repPoints;
+    public List<float> perkStandsMoneyMult;
+    public List<float> perkLogesRepMult;
+    public List<int> perkChambersGlAllowed;
 }
 
 
@@ -21,12 +26,14 @@ public class DataManager : MonoBehaviour
     private static DataManager instance;
     public static DataManager Instance { get { return instance; } }
 
-    private string namesDataFile;
+    //private string namesDataFile;
     private NamesData namesData = null;
 
     private GameSave save;
     public List<Gladiator> gladiatorList = new List<Gladiator>();
     public List<Gladiator> marketList = new List<Gladiator>();
+
+    public TextAsset names;
 
     private string gameDataFile = "data.json";
 
@@ -35,9 +42,13 @@ public class DataManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            namesDataFile = Application.persistentDataPath + "/names.json";
+            //namesDataFile = "Assets/Data/" + "names.json";
 
-            if (File.Exists(namesDataFile)) namesData = JsonUtility.FromJson<NamesData>(File.ReadAllText(namesDataFile));
+            //if (File.Exists(namesDataFile)) namesData = JsonUtility.FromJson<NamesData>(File.ReadAllText(namesDataFile));
+            if (names != null) namesData = JsonUtility.FromJson<NamesData>(names.ToString());
+            else Debug.LogWarning("Namesdata not found.");
+
+            Debug.Log(namesData.regions.Count);
 
             DontDestroyOnLoad(gameObject);
 
@@ -71,11 +82,44 @@ public class DataManager : MonoBehaviour
 
     public string names_getTitle()
     {
-        for(int level = 0; level < namesData.repPoints.Count; level++)
+        for(int level = 1; level < namesData.repPoints.Count; level++)
+        {
+            if (save.repPoints < namesData.repPoints[level]) return namesData.repTitles[level-1];
+        }
+        return namesData.repTitles[namesData.repTitles.Count - 1];
+    }
+
+    public string names_getNextTitle()
+    {
+        for (int level = 1; level < namesData.repPoints.Count; level++)
         {
             if (save.repPoints < namesData.repPoints[level]) return namesData.repTitles[level];
         }
         return namesData.repTitles[namesData.repTitles.Count - 1];
+    }
+
+    private int names_getTitlePoints(string title)
+    {
+        for (int level = 0; level < namesData.repPoints.Count; level++)
+        {
+            if (title == namesData.repTitles[level]) return namesData.repPoints[level];
+        }
+        return namesData.repPoints[namesData.repTitles.Count - 1];
+    }
+
+    public int names_getCurrentTitlePoints()
+    {
+        return names_getTitlePoints(names_getTitle());
+    }
+
+    public int names_getNextTitlePoints()
+    {
+        return names_getTitlePoints(names_getNextTitle());
+    }
+
+    public int getRepPoints()
+    {
+        return save.repPoints;
     }
 
     public void AddRepPoints(int points)
@@ -117,7 +161,7 @@ public class DataManager : MonoBehaviour
 
     void WriteFile(string path, string content)
     {
-        FileStream fileStream = new FileStream(path, FileMode.Create);
+        FileStream fileStream = new FileStream(path, System.IO.FileMode.Create);
         using (StreamWriter writer = new StreamWriter(fileStream))
         {
             writer.Write(content);
@@ -178,6 +222,7 @@ public class DataManager : MonoBehaviour
 
     public void Continue()
     {
+        Debug.Log("Continue");
         //if (save == null) LoadData();
         save.Continue();
         SaveData();
@@ -233,7 +278,41 @@ public class DataManager : MonoBehaviour
 
     public string getCity() { return save.cityName; }
 
-    public void AddMoney(int n) { save.money += 100; SaveData(); }
+    public int getPerkLevel(string perk)
+    {
+        switch (perk)
+        {
+            case "stands":
+                return save.perk_standsLevel;
+            case "loges":
+                return save.perk_logesLevel;
+            case "chambers":
+                return save.perk_chambersLevel;
+            default:
+                Debug.LogError("ERROR: Perk " + perk + " level not found");
+                return -1;
+        }
+    }
+
+    public float names_MoneyMult()
+    {
+        if (save.perk_standsLevel < 1 || save.perk_standsLevel > 4) return 1f;
+        else return namesData.perkStandsMoneyMult[save.perk_standsLevel];
+    }
+
+    public float names_RepMult()
+    {
+        if (save.perk_logesLevel < 1 || save.perk_logesLevel > 4) return 1f;
+        else return namesData.perkLogesRepMult[save.perk_logesLevel];
+    }
+
+    public int names_GlAllowed()
+    {
+        if (save.perk_chambersLevel < 1 || save.perk_chambersLevel > 4) return 2;
+        else return namesData.perkChambersGlAllowed[save.perk_chambersLevel];
+    }
+
+    public void AddMoney(int n) { save.money += n; SaveData(); }
 
     public void AddGladiator(Gladiator gladiator, int cost)
     {
@@ -242,9 +321,30 @@ public class DataManager : MonoBehaviour
         LoadGladiators();
     }
 
-    public List<String> getRepTitles()
+    public void UpgradePerk(string perk, int cost)
     {
-        return namesData.repTitles;
+        switch (perk)
+        {
+            case "stands":
+                if (save.perk_standsLevel < 4) save.perk_standsLevel++;
+                break;
+            case "loges":
+                if (save.perk_logesLevel < 4) save.perk_logesLevel++;
+                break;
+            case "chambers":
+                if (save.perk_chambersLevel < 4) save.perk_chambersLevel++;
+                break;
+            default:
+                Debug.LogError("ERROR: Perk " + perk + " not found");
+                return;
+        }
+        save.money -= cost;
+        SaveData();
+    }
+
+    public int getNGladiators()
+    {
+        return save.gladiators.Count;
     }
 
 }

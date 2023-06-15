@@ -7,12 +7,20 @@ using Unity.VisualScripting;
 public class MainSceneLogic : MonoBehaviour
 {
     public TMP_Text dateText;
-    public TMP_Text reputationText;
     public TMP_Text moneyText;
 
     public Transform battlesPanel_transform;
     public GameObject GLBattleButton_Prefab;
 
+
+    [Header("Reputation Indicator")]
+    public TMP_Text currentRepTitleText;
+    public TMP_Text currentRepPointsText;
+    public TMP_Text nextRepTitleText;
+    public TMP_Text nextRepPointsText;
+    public RectTransform repSlider;
+
+    Vector2 initialRepSliderRect;
 
     private void Start()
     {
@@ -26,6 +34,8 @@ public class MainSceneLogic : MonoBehaviour
                 button.GetComponent<GLBattleButton>().battle = battle;
             }
         }
+        initialRepSliderRect = repSlider.sizeDelta;
+
     }
 
     // Update is called once per frame
@@ -34,8 +44,8 @@ public class MainSceneLogic : MonoBehaviour
         if (dateText != null)
             dateText.text = DataManager.Instance.Date(true);
 
-        if (reputationText != null)
-            reputationText.text = DataManager.Instance.names_getTitle();
+        if (currentRepTitleText != null)
+            SetRepIndicator();
 
         if (moneyText != null)
             moneyText.text = DataManager.Instance.getMoney().ToString();
@@ -45,10 +55,26 @@ public class MainSceneLogic : MonoBehaviour
 
     }
 
+    private void SetRepIndicator()
+    {
+        currentRepTitleText.text = "Current: " + '\n' + DataManager.Instance.names_getTitle();
+        nextRepTitleText.text = "Next: " + '\n' + DataManager.Instance.names_getNextTitle();
+
+        int titlePoints = DataManager.Instance.names_getCurrentTitlePoints();
+        int currentPoints = DataManager.Instance.getRepPoints();
+        int nextPoints = DataManager.Instance.names_getNextTitlePoints();
+
+        currentRepPointsText.text = titlePoints.ToString();
+        nextRepPointsText.text = nextPoints.ToString();
+
+        float levelpercent = ((float)currentPoints - (float)titlePoints) / ((float)nextPoints - (float)titlePoints);
+
+        repSlider.sizeDelta = new Vector2(initialRepSliderRect.x * levelpercent, initialRepSliderRect.y);
+
+    }
+
     public void Continue()
     {
-        Debug.Log(GameManager.Instance.nextFestival == null);
-        Debug.Log(GameManager.Instance.nextFestival.battles.Count);
         if (GameManager.Instance.nextFestival != null && GameManager.Instance.nextFestival.battles.Count > 0)
             GameManager.Instance.LoadScene("Scene_PreCombat");
         else DataManager.Instance.Continue();
