@@ -65,7 +65,7 @@ public class MarketSceneLogic : MonoBehaviour
     {
         int money = DataManager.Instance.getMoney();
 
-        Debug.Log(currentGl + " " + limitGl);
+        //Debug.Log(currentGl + " " + limitGl);
 
         moneyText.text = money.ToString();
 

@@ -256,7 +256,6 @@ public class CombatLogic : MonoBehaviour
 
     IEnumerator EndBattle()
     {
-        Debug.Log("ended");
         ApplyResults();
         yield return new WaitForSeconds(2);
         SetEndingPanel();

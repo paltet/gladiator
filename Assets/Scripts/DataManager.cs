@@ -308,8 +308,9 @@ public class DataManager : MonoBehaviour
 
     public int names_GlAllowed()
     {
+        Debug.Log(save.perk_chambersLevel);
         if (save.perk_chambersLevel < 1 || save.perk_chambersLevel > 4) return 2;
-        else return namesData.perkChambersGlAllowed[save.perk_chambersLevel];
+        else return namesData.perkChambersGlAllowed[save.perk_chambersLevel-1];
     }
 
     public void AddMoney(int n) { save.money += n; SaveData(); }
